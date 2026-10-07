@@ -175,6 +175,14 @@ function textSpanHtml(markup: string, text: string): string {
   return markup.slice(tagStart, spanEnd + '</span>'.length)
 }
 
+function titleTooltipContentHtml(markup: string): string {
+  // Why: the close button has its own tooltip; the title tooltip is the one with the wrap classes.
+  const classIndex = markup.indexOf('class="max-w-80 whitespace-normal break-words text-left"')
+  const start = markup.lastIndexOf('<div data-tooltip-content', classIndex)
+  expect(start).toBeGreaterThanOrEqual(0)
+  return markup.slice(start, markup.indexOf('</div>', start) + '</div>'.length)
+}
+
 function expectTabContainerWidth(markup: string, root: string): void {
   const container = firstOpeningTag(markup)
   // Why: pinned literally — a definite `w-*` is what stops live title updates from resizing
@@ -366,6 +374,9 @@ describe('tab title tooltips', () => {
     )
 
     expectTooltipContent(markup, 'VeryLongEditorFileName.tsx')
+    expect(titleTooltipContentHtml(markup)).toContain(
+      '>/repo/src/components/VeryLongEditorFileName.tsx</div>'
+    )
     expect(markup).toContain('line-through')
     expect(markup).toContain('renamed')
     const root = openingTag(markup, 'data-sortable-id', 'editor-tab-1')
@@ -375,5 +386,32 @@ describe('tab title tooltips', () => {
     expect(root).toContain('data-tab-id="editor-tab-1"')
     expect(textSpanHtml(markup, 'VeryLongEditorFileName.tsx')).not.toContain('renamed')
     expectTabContainerWidth(markup, root)
+  })
+
+  it('shows the full path with the diff source in an editor diff tab tooltip', () => {
+    const markup = renderToStaticMarkup(
+      <EditorFileTab
+        file={makeEditorFile({ mode: 'diff', diffSource: 'staged' })}
+        isActive={false}
+        isPinned={false}
+        hasTabsToRight={false}
+        hasTabsToLeft={false}
+        tabCount={1}
+        gitStatus={null}
+        onActivate={vi.fn()}
+        onClose={vi.fn()}
+        onCloseOthers={vi.fn()}
+        onCloseToRight={vi.fn()}
+        onCloseToLeft={vi.fn()}
+        onCloseAll={vi.fn()}
+        onTogglePin={vi.fn()}
+        dragData={makeDragData('editor', 'editor-tab-1')}
+      />
+    )
+
+    expect(titleTooltipContentHtml(markup)).toContain(
+      '>/repo/src/components/VeryLongEditorFileName.tsx (staged diff)</div>'
+    )
+    textSpanHtml(markup, 'VeryLongEditorFileName.tsx (staged diff)')
   })
 })

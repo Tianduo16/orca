@@ -201,6 +201,8 @@ export default function EditorFileTab({
 
   const tabStatusColor = tabStatus ? STATUS_COLORS[tabStatus] : undefined
   const tabLabel = getEditorDisplayLabel(file)
+  // Why: same-named files in different folders look identical on the tab; the path tells them apart.
+  const tabTooltipLabel = getEditorDisplayLabel(file, 'fullPath')
 
   useEffect(() => {
     const closeMenu = (): void => setMenuOpen(false)
@@ -405,7 +407,7 @@ export default function EditorFileTab({
               sideOffset={6}
               className="max-w-80 whitespace-normal break-words text-left"
             >
-              {tabLabel}
+              {tabTooltipLabel}
             </TooltipContent>
           </Tooltip>
         )}
