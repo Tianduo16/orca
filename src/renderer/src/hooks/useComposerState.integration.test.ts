@@ -41,11 +41,9 @@ describe('useComposerState integrated lifecycle', () => {
       worktreesByRepo: {},
       sparsePresetsByRepo: {}
     })
-    const first = renderHook(() =>
-      useComposerState({ initialName: 'first', persistDraft: false, createGateMode: 'quick' })
-    )
+    const first = renderHook(() => useComposerState({ initialName: 'first', persistDraft: false }))
     const second = renderHook(() =>
-      useComposerState({ initialName: 'second', persistDraft: false, createGateMode: 'quick' })
+      useComposerState({ initialName: 'second', persistDraft: false })
     )
 
     expect(first.result.current.cardProps.name).toBe('first')
