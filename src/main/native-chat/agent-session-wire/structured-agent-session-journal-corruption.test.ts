@@ -51,6 +51,8 @@ const stop = (turnEnvelope = envelope('agentSession.cancel', { turnId: 'turn-1' 
 // T-corrupt-midsession.
 it('refuses a send as corrupt when SQLite reports damage, and still stops the agent', async () => {
   await attach()
+  // The attach's restart-offer withdrawal holds a lock file until it ends; snapshot after it.
+  await hostTestRecoveryCapsuleSettled()
   // Order-free: recursive listing order is the runtime's, and only what exists matters.
   const files = (await readdir(root, { recursive: true })).toSorted()
   const damaged = sqliteError('database disk image is malformed', 11)
@@ -79,7 +81,6 @@ it('refuses a send as corrupt when SQLite reports damage, and still stops the ag
     sessionId: expect.any(String),
     error: expect.objectContaining({ message: 'database disk image is malformed' })
   })
-  // The restart-offer withdrawal the attach started holds its lock until it ends.
   await hostTestRecoveryCapsuleSettled()
   expect((await readdir(root, { recursive: true })).toSorted()).toEqual(files)
 })
