@@ -12,7 +12,7 @@ import { ConflictBadge } from './conflict-badge'
 import { getLocalizedConflictKindLabel } from './conflict-label'
 import { DiffLineCounts } from './diff-line-counts'
 import { SourceControlEntryContextMenu } from './entry-context-menu'
-import { SourceControlEntryPathTooltip } from './entry-path-tooltip'
+import { TabHoverCard } from '../../../tab-bar/TabHoverCard'
 import { canDiscardStatusEntry, canStageStatusEntry, canUnstageStatusEntry } from './entry-actions'
 import { isSubmoduleWorktreeOnlyChange } from '../commit/discard-all-sequence'
 import { toPermanentSourceControlRowOpenEvent, type SourceControlRowOpenEvent } from './split-open'
@@ -76,7 +76,6 @@ export const UncommittedEntryRow = React.memo(function UncommittedEntryRow({
   const fileName = basename(entry.path)
   const parentDir = dirname(entry.path)
   const dirPath = parentDir === '.' ? '' : parentDir
-  const absolutePath = joinPath(worktreePath, entry.path)
   const isUnresolvedConflict = entry.conflictStatus === 'unresolved'
   const isSubmoduleWorktreeOnly = isSubmoduleWorktreeOnlyChange(entry)
   const conflictLabel = entry.conflictKind
@@ -92,7 +91,7 @@ export const UncommittedEntryRow = React.memo(function UncommittedEntryRow({
   return (
     <SourceControlEntryContextMenu
       currentWorktreeId={currentWorktreeId}
-      absolutePath={absolutePath}
+      absolutePath={joinPath(worktreePath, entry.path)}
       relativePath={entry.path}
       hasWorkingTreeFile={entry.status !== 'deleted'}
       connectionId={connectionId}
@@ -124,6 +123,7 @@ export const UncommittedEntryRow = React.memo(function UncommittedEntryRow({
             e.preventDefault()
             return
           }
+          const absolutePath = joinPath(worktreePath, entry.path)
           e.dataTransfer.setData(WORKSPACE_FILE_PATH_MIME, absolutePath)
           writeWorkspaceFileDragSourceForWorkspace(e.dataTransfer, currentWorktreeId)
           e.dataTransfer.effectAllowed = 'copy'
@@ -163,14 +163,25 @@ export const UncommittedEntryRow = React.memo(function UncommittedEntryRow({
           style: { color: STATUS_COLORS[entry.status] }
         })}
         <div className="min-w-0 flex-1 text-xs">
-          <SourceControlEntryPathTooltip path={absolutePath}>
+          <TabHoverCard
+            title={fileName}
+            description={entry.path}
+            programName={translate(
+              'auto.components.right.sidebar.index.0314901467',
+              'Source Control'
+            )}
+            icon={React.createElement(FileIcon, {
+              className: 'size-4',
+              style: { color: STATUS_COLORS[entry.status] }
+            })}
+          >
             <span className="min-w-0 block truncate">
               <span className="text-foreground">{fileName}</span>
               {showPathHint && dirPath && (
                 <span className="ml-1.5 text-[11px] text-muted-foreground">{dirPath}</span>
               )}
             </span>
-          </SourceControlEntryPathTooltip>
+          </TabHoverCard>
           {conflictLabel && (
             <div className="truncate text-[11px] text-muted-foreground">{conflictLabel}</div>
           )}

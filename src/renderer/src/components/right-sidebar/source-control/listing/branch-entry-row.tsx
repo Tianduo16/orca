@@ -8,7 +8,7 @@ import { translate } from '@/i18n/i18n'
 import type { GitBranchChangeEntry } from '../../../../../../shared/git-diff-compare-types'
 import { DiffLineCounts } from './diff-line-counts'
 import { SourceControlEntryContextMenu } from './entry-context-menu'
-import { SourceControlEntryPathTooltip } from './entry-path-tooltip'
+import { TabHoverCard } from '../../../tab-bar/TabHoverCard'
 import { toPermanentSourceControlRowOpenEvent, type SourceControlRowOpenEvent } from './split-open'
 import { SOURCE_CONTROL_TREE_FILE_PADDING_PX, SOURCE_CONTROL_TREE_INDENT_PX } from './row-layout'
 import { STATUS_COLORS, STATUS_LABELS } from '../../status-display'
@@ -39,12 +39,11 @@ export function BranchEntryRow({
   const fileName = basename(entry.path)
   const parentDir = dirname(entry.path)
   const dirPath = parentDir === '.' ? '' : parentDir
-  const absolutePath = joinPath(worktreePath, entry.path)
 
   return (
     <SourceControlEntryContextMenu
       currentWorktreeId={currentWorktreeId}
-      absolutePath={absolutePath}
+      absolutePath={joinPath(worktreePath, entry.path)}
       relativePath={entry.path}
       hasWorkingTreeFile={entry.status !== 'deleted'}
       connectionId={connectionId}
@@ -58,6 +57,7 @@ export function BranchEntryRow({
         }}
         draggable
         onDragStart={(e) => {
+          const absolutePath = joinPath(worktreePath, entry.path)
           e.dataTransfer.setData(WORKSPACE_FILE_PATH_MIME, absolutePath)
           writeWorkspaceFileDragSourceForWorkspace(e.dataTransfer, currentWorktreeId)
           e.dataTransfer.effectAllowed = 'copy'
@@ -69,14 +69,25 @@ export function BranchEntryRow({
           className: 'size-3.5 shrink-0',
           style: { color: STATUS_COLORS[entry.status] }
         })}
-        <SourceControlEntryPathTooltip path={absolutePath}>
+        <TabHoverCard
+          title={fileName}
+          description={entry.path}
+          programName={translate(
+            'auto.components.right.sidebar.index.0314901467',
+            'Source Control'
+          )}
+          icon={React.createElement(FileIcon, {
+            className: 'size-4',
+            style: { color: STATUS_COLORS[entry.status] }
+          })}
+        >
           <span className="min-w-0 flex-1 truncate text-xs">
             <span className="text-foreground">{fileName}</span>
             {showPathHint && dirPath && (
               <span className="ml-1.5 text-[11px] text-muted-foreground">{dirPath}</span>
             )}
           </span>
-        </SourceControlEntryPathTooltip>
+        </TabHoverCard>
         {commentCount > 0 && (
           <span
             className="flex shrink-0 items-center gap-0.5 text-[10px] text-muted-foreground"
