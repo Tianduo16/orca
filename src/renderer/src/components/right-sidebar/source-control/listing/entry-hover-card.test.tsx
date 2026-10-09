@@ -26,47 +26,49 @@ function hoverCardHtml(markup: string): string {
 }
 
 describe('source control row hover card', () => {
-  it('shows the file name and repo-relative path on an uncommitted change row', () => {
-    const card = hoverCardHtml(
-      renderToStaticMarkup(
-        <UncommittedEntryRow
-          entryKey={`unstaged::${ROW_PATH}`}
-          entry={{ path: ROW_PATH, status: 'modified', area: 'unstaged' }}
-          currentWorktreeId="wt-1"
-          worktreePath="/repo"
-          onRevealInExplorer={vi.fn()}
-          onOpen={vi.fn()}
-          onStage={vi.fn()}
-          onUnstage={vi.fn()}
-          onDiscard={vi.fn()}
-          commentCount={0}
-        />
-      )
+  it('shows the file name and repo-relative path on a focusable uncommitted change row', () => {
+    const markup = renderToStaticMarkup(
+      <UncommittedEntryRow
+        entryKey={`unstaged::${ROW_PATH}`}
+        entry={{ path: ROW_PATH, status: 'modified', area: 'unstaged' }}
+        currentWorktreeId="wt-1"
+        worktreePath="/repo"
+        onRevealInExplorer={vi.fn()}
+        onOpen={vi.fn()}
+        onStage={vi.fn()}
+        onUnstage={vi.fn()}
+        onDiscard={vi.fn()}
+        commentCount={0}
+      />
     )
+    const card = hoverCardHtml(markup)
 
     expect(card).toContain('data-tab-hover-card-title="true">EditorFileTab.tsx</div>')
     expect(card).toContain(`>${ROW_PATH}</div>`)
     expect(card).not.toContain('/repo/')
     expect(card).toContain('Source Control')
+    // Why: hover-only path info must also open from keyboard focus.
+    expect(markup).toMatch(/<span class="[^"]*focus-visible:ring-1[^"]*" tabindex="0">/)
   })
 
-  it('shows the file name and repo-relative path on a committed branch change row', () => {
-    const card = hoverCardHtml(
-      renderToStaticMarkup(
-        <BranchEntryRow
-          entry={{ path: ROW_PATH, status: 'modified' }}
-          currentWorktreeId="wt-1"
-          worktreePath="/repo"
-          onRevealInExplorer={vi.fn()}
-          onOpen={vi.fn()}
-          commentCount={0}
-        />
-      )
+  it('shows the file name and repo-relative path on a focusable committed branch change row', () => {
+    const markup = renderToStaticMarkup(
+      <BranchEntryRow
+        entry={{ path: ROW_PATH, status: 'modified' }}
+        currentWorktreeId="wt-1"
+        worktreePath="/repo"
+        onRevealInExplorer={vi.fn()}
+        onOpen={vi.fn()}
+        commentCount={0}
+      />
     )
+    const card = hoverCardHtml(markup)
 
     expect(card).toContain('data-tab-hover-card-title="true">EditorFileTab.tsx</div>')
     expect(card).toContain(`>${ROW_PATH}</div>`)
     expect(card).not.toContain('/repo/')
     expect(card).toContain('Source Control')
+    // Why: hover-only path info must also open from keyboard focus.
+    expect(markup).toMatch(/<span class="[^"]*focus-visible:ring-1[^"]*" tabindex="0">/)
   })
 })

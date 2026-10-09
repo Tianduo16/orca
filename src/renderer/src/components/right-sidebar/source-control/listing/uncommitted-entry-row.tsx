@@ -175,7 +175,10 @@ export const UncommittedEntryRow = React.memo(function UncommittedEntryRow({
               style: { color: STATUS_COLORS[entry.status] }
             })}
           >
-            <span className="min-w-0 block truncate">
+            <span
+              className="min-w-0 block truncate rounded-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              tabIndex={0}
+            >
               <span className="text-foreground">{fileName}</span>
               {showPathHint && dirPath && (
                 <span className="ml-1.5 text-[11px] text-muted-foreground">{dirPath}</span>
