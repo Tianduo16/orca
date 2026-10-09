@@ -175,8 +175,8 @@ function textSpanHtml(markup: string, text: string): string {
   return markup.slice(tagStart, spanEnd + '</span>'.length)
 }
 
+/** Returns the title tooltip's markup; the close button's tooltip lacks the wrap classes, so it is skipped. */
 function titleTooltipContentHtml(markup: string): string {
-  // Why: the close button has its own tooltip; the title tooltip is the one with the wrap classes.
   const classIndex = markup.indexOf('class="max-w-80 whitespace-normal break-words text-left"')
   const start = markup.lastIndexOf('<div data-tooltip-content', classIndex)
   expect(start).toBeGreaterThanOrEqual(0)

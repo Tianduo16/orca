@@ -20,6 +20,7 @@ vi.mock('./entry-context-menu', () => ({
 
 const ROW_PATH = 'src/components/tab-bar/EditorFileTab.tsx'
 
+/** Returns the text of the mocked tooltip content in rendered row markup. */
 function tooltipText(markup: string): string {
   const match = markup.match(/<div data-tooltip-content="true">([^<]*)<\/div>/)
   expect(match).not.toBeNull()

@@ -34,6 +34,7 @@ import { EditorFileTabCloseButton } from './EditorFileTabCloseButton'
 import { useTabStripPointerActivation } from './tab-strip-pointer-activation'
 import { editorTabDocumentFolderAccess } from '@/lib/local-file-access'
 
+/** One editor tab in the tab strip: icon, label, status adornments, rename, context menu and hover tooltip. */
 export default function EditorFileTab({
   file,
   isActive,

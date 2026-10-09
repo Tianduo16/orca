@@ -13,6 +13,7 @@ import { toPermanentSourceControlRowOpenEvent, type SourceControlRowOpenEvent } 
 import { SOURCE_CONTROL_TREE_FILE_PADDING_PX, SOURCE_CONTROL_TREE_INDENT_PX } from './row-layout'
 import { STATUS_COLORS, STATUS_LABELS } from '../../status-display'
 
+/** Renders one committed branch-compare row: file identity, note count, diff counts and status. */
 export function BranchEntryRow({
   entry,
   currentWorktreeId,
